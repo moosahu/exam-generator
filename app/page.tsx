@@ -678,6 +678,6 @@ export default function ExamGenerator() {
           </div>
         )}
       </div>
-    );
-  }
+    </div>
+  );
 }
