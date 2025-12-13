@@ -471,33 +471,34 @@ export default function ExamGenerator() {
     }
   };
 
-  const handleDownloadModels = () => {
-    try {
-      for (let i = 0; i < numModels; i++) {
-        setTimeout(() => {
-          const shuffledQuestions = shuffleArray(questions.map(q => ({
-            ...q,
-            options: shuffleArray(q.options.map((opt, idx) => ({ text: opt, wasIndex: idx }))),
-          })).map(q => ({
-            ...q,
-            correctAnswer: q.options.findIndex((opt) => opt.wasIndex === q.correctAnswer)
-          })
-          
-          const modelLabel = `نموذج ${String.fromCharCode(65 + i)}`;
-          const html = generateHTML(shuffledQuestions, modelLabel, false);
-          downloadFile(html, `نموذج_${String.fromCharCode(65 + i)}.html`, 'text/html;charset=utf-8');
-        }, i * 600);
-      }
-      
+const handleDownloadModels = () => {
+  try {
+    for (let i = 0; i < numModels; i++) {
       setTimeout(() => {
-        const html = generateHTML(questions, 'نموذج الإجابة', true);
-        downloadFile(html, 'نموذج_الاجابة.html', 'text/html;charset=utf-8');
-        alert(`تم تحميل ${numModels} نموذج + نموذج الإجابة ✅`);
-      }, numModels * 600);
-    } catch (error) {
-      alert('حدث خطأ: ' + error);
+        const shuffledQuestions = shuffleArray(questions.map(q => {
+          const shuffledOpts = shuffleArray(q.options.map((opt, idx) => ({ text: opt, wasIndex: idx })));
+          return {
+            ...q,
+            options: shuffledOpts,
+            correctAnswer: shuffledOpts.findIndex((opt: any) => opt.wasIndex === q.correctAnswer)
+          };
+        }));
+        
+        const modelLabel = `نموذج ${String.fromCharCode(65 + i)}`;
+        const html = generateHTML(shuffledQuestions, modelLabel, false);
+        downloadFile(html, `نموذج_${String.fromCharCode(65 + i)}.html`, 'text/html;charset=utf-8');
+      }, i * 600);
     }
-  };
+    
+    setTimeout(() => {
+      const html = generateHTML(questions, 'نموذج الإجابة', true);
+      downloadFile(html, 'نموذج_الاجابة.html', 'text/html;charset=utf-8');
+      alert(`تم تحميل ${numModels} نموذج + نموذج الإجابة ✅`);
+    }, numModels * 600);
+  } catch (error) {
+    alert('حدث خطأ: ' + error);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-6" dir="rtl">
