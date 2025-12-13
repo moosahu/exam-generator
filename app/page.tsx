@@ -481,7 +481,7 @@ export default function ExamGenerator() {
           })).map(q => ({
             ...q,
             correctAnswer: q.options.findIndex((opt) => opt.wasIndex === q.correctAnswer)
-          }));
+          })
           
           const modelLabel = `نموذج ${String.fromCharCode(65 + i)}`;
           const html = generateHTML(shuffledQuestions, modelLabel, false);
