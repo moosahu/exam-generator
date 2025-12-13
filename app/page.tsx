@@ -621,4 +621,63 @@ export default function ExamGenerator() {
                     <div className="flex gap-4">
                       <div className="flex items-center gap-2">
                         <label className="font-semibold">الإجابة الصحيحة:</label>
-                        <select value={q.correctAnswer} onChange={(e) => updateTempQuestion(q.id, 'correctAnswer
+                        <select value={q.correctAnswer} onChange={(e) => , parseInt(e.target.value))} className="p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none">
+                          {[0, 1, 2, 3].map((idx) => (
+                            <option key={idx} value={idx}>{['أ', 'ب', 'ج', 'د'][idx]}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="font-semibold">الدرجات:</label>
+                        <input type="number" min="1" value={q.marks} onChange={(e) => updateTempQuestion(q.id, 'marks', parseInt(e.target.value))} className="w-20 p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none"/>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button onClick={addTempQuestion} className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                  <Plus size={20} /> إضافة سؤال
+                </button>
+                <button onClick={saveQuestionBank} className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                  <Save size={20} /> حفظ بنك الأسئلة
+                </button>
+                <button onClick={() => setShowAddQuestionsPage(false)} className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showQuestionSelector && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold mb-4">اختر الأسئلة</h2>
+              <div className="space-y-3 mb-6">
+                {availableQuestions.map((q) => (
+                  <div key={q.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                    <input type="checkbox" checked={selectedQuestionIds.includes(q.id)} onChange={() => toggleQuestionSelection(q.id)} className="mt-1"/>
+                    <div className="flex-1">
+                      <p className="font-semibold">{q.text}</p>
+                      <p className="text-sm text-gray-600">الدرجات: {q.marks}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-3">
+                <button onClick={applySelectedQuestions} className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                  تطبيق
+                </button>
+                <button onClick={() => setShowQuestionSelector(false)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+}

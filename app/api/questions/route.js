@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const subjectId = searchParams.get('subjectId');
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request) {
   try {
     const { subjectId, questions } = await request.json();
     
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     });
     
     const created = await prisma.question.createMany({
-      data: questions.map((q: any) => ({
+      data: questions.map((q) => ({
         text: q.text,
         option1: q.options[0],
         option2: q.options[1],
