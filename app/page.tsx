@@ -621,7 +621,7 @@ export default function ExamGenerator() {
                     <div className="flex gap-4">
                       <div className="flex items-center gap-2">
                         <label className="font-semibold">الإجابة الصحيحة:</label>
-                        <select value={q.correctAnswer} onChange={(e) => , parseInt(e.target.value))} className="p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none">
+                        <select value={q.correctAnswer} onChange={(e) => updateTempQuestion(q.id, 'correctAnswer', parseInt(e.target.value))} className="p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none">
                           {[0, 1, 2, 3].map((idx) => (
                             <option key={idx} value={idx}>{['أ', 'ب', 'ج', 'د'][idx]}</option>
                           ))}

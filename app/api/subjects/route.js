@@ -3,54 +3,49 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
-  try {
-    const subjects = await prisma.subject.findMany({
-      include: {
-        questions: true,
-      },
-    });
-    return NextResponse.json(subjects);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch subjects' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request: Request) {
-  try {
-    const { name } = await request.json();
-    const subject = await prisma.subject.create({
-      data: { name },
-    });
-    return NextResponse.json(subject);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create subject' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(request: Request) {
+export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const subjectId = searchParams.get('subjectId');
     
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID required' },
-        { status: 400 }
-      );
-    }
+    const questions = await prisma.question.findMany({
+      where: subjectId ? { subjectId } : undefined,
+    });
     
-    await prisma.subject.delete({ where: { id } });
-    return NextResponse.json({ success: true });
+    return NextResponse.json(questions);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to delete subject' },
+      { error: 'Failed to fetch questions' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request) {
+  try {
+    const { subjectId, questions } = await request.json();
+    
+    await prisma.question.deleteMany({
+      where: { subjectId },
+    });
+    
+    const created = await prisma.question.createMany({
+      data: questions.map((q) => ({
+        text: q.text,
+        option1: q.options[0],
+        option2: q.options[1],
+        option3: q.options[2],
+        option4: q.options[3],
+        correctAnswer: q.correctAnswer,
+        marks: q.marks,
+        subjectId,
+      })),
+    });
+    
+    return NextResponse.json(created);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to save questions' },
       { status: 500 }
     );
   }
