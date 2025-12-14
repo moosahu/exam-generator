@@ -41,13 +41,7 @@ export default function ExamGenerator() {
   });
 
   const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: 1,
-      text: '',
-      options: ['', '', '', ''],
-      correctAnswer: 0,
-      marks: 1
-    }
+    { id: 1, text: '', options: ['', '', '', ''], correctAnswer: 0, marks: 1 }
   ]);
 
   const [subjects, setSubjects] = useState<string[]>([]);
@@ -58,13 +52,7 @@ export default function ExamGenerator() {
   const [availableQuestions, setAvailableQuestions] = useState<Question[]>([]);
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<number[]>([]);
   const [tempQuestions, setTempQuestions] = useState<Question[]>([
-    {
-      id: 1,
-      text: '',
-      options: ['', '', '', ''],
-      correctAnswer: 0,
-      marks: 1
-    }
+    { id: 1, text: '', options: ['', '', '', ''], correctAnswer: 0, marks: 1 }
   ]);
   const [newSubjectName, setNewSubjectName] = useState('');
   const [numModels, setNumModels] = useState(2);
@@ -97,8 +85,8 @@ export default function ExamGenerator() {
   const loadSubjectQuestions = async (subjectName: string) => {
     try {
       const res = await fetch('/api/subjects');
-      const subjects = await res.json();
-      const subject = subjects.find((s: any) => s.name === subjectName);
+      const subjectsData = await res.json();
+      const subject = subjectsData.find((s: any) => s.name === subjectName);
       
       if (subject && subject.questions.length > 0) {
         const formattedQuestions = subject.questions.map((q: any) => ({
@@ -110,13 +98,7 @@ export default function ExamGenerator() {
         }));
         setTempQuestions(formattedQuestions);
       } else {
-        setTempQuestions([{
-          id: Date.now(),
-          text: '',
-          options: ['', '', '', ''],
-          correctAnswer: 0,
-          marks: 1
-        }]);
+        setTempQuestions([{ id: Date.now(), text: '', options: ['', '', '', ''], correctAnswer: 0, marks: 1 }]);
       }
       
       setSelectedSubject(subjectName);
@@ -134,7 +116,6 @@ export default function ExamGenerator() {
     }
 
     try {
-      // Create or get subject
       let subjectId;
       const subjectsRes = await fetch('/api/subjects');
       const existingSubjects = await subjectsRes.json();
@@ -152,24 +133,14 @@ export default function ExamGenerator() {
         subjectId = newSubject.id;
       }
 
-      // Save questions
       await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subjectId,
-          questions: tempQuestions
-        })
+        body: JSON.stringify({ subjectId, questions: tempQuestions })
       });
 
       await loadSubjects();
-      setTempQuestions([{
-        id: Date.now(),
-        text: '',
-        options: ['', '', '', ''],
-        correctAnswer: 0,
-        marks: 1
-      }]);
+      setTempQuestions([{ id: Date.now(), text: '', options: ['', '', '', ''], correctAnswer: 0, marks: 1 }]);
       setSelectedSubject('');
       setShowAddQuestionsPage(false);
       alert('تم حفظ بنك الأسئلة بنجاح!');
@@ -184,8 +155,8 @@ export default function ExamGenerator() {
 
     try {
       const res = await fetch('/api/subjects');
-      const subjects = await res.json();
-      const subject = subjects.find((s: any) => s.name === subjectName);
+      const subjectsData = await res.json();
+      const subject = subjectsData.find((s: any) => s.name === subjectName);
       
       if (subject) {
         await fetch(`/api/subjects?id=${subject.id}`, { method: 'DELETE' });
@@ -201,8 +172,8 @@ export default function ExamGenerator() {
   const loadQuestionsForSelection = async (subjectName: string) => {
     try {
       const res = await fetch('/api/subjects');
-      const subjects = await res.json();
-      const subject = subjects.find((s: any) => s.name === subjectName);
+      const subjectsData = await res.json();
+      const subject = subjectsData.find((s: any) => s.name === subjectName);
       
       if (subject && subject.questions.length > 0) {
         const formattedQuestions = subject.questions.map((q: any) => ({
@@ -242,24 +213,8 @@ export default function ExamGenerator() {
     alert(`تم إضافة ${selected.length} سؤال للاختبار`);
   };
 
-  const addQuestion = () => {
-    setQuestions([...questions, {
-      id: Date.now(),
-      text: '',
-      options: ['', '', '', ''],
-      correctAnswer: 0,
-      marks: 1
-    }]);
-  };
-
   const addTempQuestion = () => {
-    setTempQuestions([...tempQuestions, {
-      id: Date.now(),
-      text: '',
-      options: ['', '', '', ''],
-      correctAnswer: 0,
-      marks: 1
-    }]);
+    setTempQuestions([...tempQuestions, { id: Date.now(), text: '', options: ['', '', '', ''], correctAnswer: 0, marks: 1 }]);
   };
 
   const removeQuestion = (id: number) => {
@@ -270,37 +225,17 @@ export default function ExamGenerator() {
     setTempQuestions(tempQuestions.filter(q => q.id !== id));
   };
 
-  const updateQuestion = (id: number, field: string, value: any) => {
-    setQuestions(questions.map(q => 
-      q.id === id ? { ...q, [field]: value } : q
-    ));
-  };
-
   const updateTempQuestion = (id: number, field: string, value: any) => {
-    setTempQuestions(tempQuestions.map(q => 
-      q.id === id ? { ...q, [field]: value } : q
-    ));
-  };
-
-  const updateOption = (qId: number, optIndex: number, value: string) => {
-    setQuestions(questions.map(q => 
-      q.id === qId ? {
-        ...q,
-        options: q.options.map((opt, i) => i === optIndex ? value : opt)
-      } : q
-    ));
+    setTempQuestions(tempQuestions.map(q => q.id === id ? { ...q, [field]: value } : q));
   };
 
   const updateTempOption = (qId: number, optIndex: number, value: string) => {
     setTempQuestions(tempQuestions.map(q => 
-      q.id === qId ? {
-        ...q,
-        options: q.options.map((opt, i) => i === optIndex ? value : opt)
-      } : q
+      q.id === qId ? { ...q, options: q.options.map((opt, i) => i === optIndex ? value : opt) } : q
     ));
   };
 
-  const shuffleArray = (array: any[]) => {
+  const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -361,22 +296,8 @@ export default function ExamGenerator() {
       <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
         <circle cx="100" cy="100" r="95" fill="none" stroke="#2d5f2e" stroke-width="3"/>
         <circle cx="100" cy="100" r="85" fill="none" stroke="#2d5f2e" stroke-width="2"/>
-        <g transform="translate(100, 100)">
-          <path d="M -15 -40 L -15 25 L -18 30 L -15 32 L -12 30 L -15 25 Z" fill="#2d5f2e"/>
-          <ellipse cx="-15" cy="27" rx="4" ry="6" fill="#2d5f2e"/>
-          <path d="M 15 -40 L 15 25 L 18 30 L 15 32 L 12 30 L 15 25 Z" fill="#2d5f2e"/>
-          <ellipse cx="15" cy="27" rx="4" ry="6" fill="#2d5f2e"/>
-        </g>
-        <g transform="translate(100, 80)">
-          <rect x="-3" y="0" width="6" height="35" fill="#8b6914"/>
-          <path d="M 0 -15 Q -20 -10 -25 5 Q -15 0 0 0" fill="#2d5f2e"/>
-          <path d="M 0 -15 Q 20 -10 25 5 Q 15 0 0 0" fill="#2d5f2e"/>
-          <path d="M 0 -20 Q -15 -18 -20 -5 Q -10 -8 0 -5" fill="#2d5f2e"/>
-          <path d="M 0 -20 Q 15 -18 20 -5 Q 10 -8 0 -5" fill="#2d5f2e"/>
-          <path d="M -2 -25 L -8 -30 L -5 -22 L 0 -25 L 5 -22 L 8 -30 L 2 -25 L 0 -32 Z" fill="#2d5f2e"/>
-        </g>
-        <text x="100" y="165" text-anchor="middle" font-size="18" font-weight="bold" fill="#2d5f2e">المملكة العربية السعودية</text>
-        <text x="100" y="183" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d5f2e">وزارة التعليم</text>
+        <text x="100" y="105" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d5f2e">وزارة التعليم</text>
+        <text x="100" y="125" text-anchor="middle" font-size="12" fill="#2d5f2e">المملكة العربية السعودية</text>
       </svg>
       <h2>${examInfo.title}</h2>
       <h2>للعام الدراسي ${examInfo.semester}</h2>
@@ -451,36 +372,41 @@ export default function ExamGenerator() {
     }, 100);
   };
 
-  const handleDownloadWord = () => {
-    try {
-      const html = generateHTML(questions, null, false);
-      downloadFile('\ufeff' + html, 'اختبار.doc', 'application/msword;charset=utf-8');
-      alert('تم تحميل ملف Word بنجاح ✅');
-    } catch (error) {
-      alert('حدث خطأ: ' + error);
-    }
-  };
-
   const handleDownloadHTML = () => {
-    try {
-      const html = generateHTML(questions, null, false);
-      downloadFile(html, 'اختبار.html', 'text/html;charset=utf-8');
-      alert('تم تحميل ملف HTML بنجاح ✅');
-    } catch (error) {
-      alert('حدث خطأ: ' + error);
+    if (questions.length === 0 || !questions[0].text) {
+      alert('الرجاء اختيار أسئلة أولاً!');
+      return;
     }
+    const html = generateHTML(questions, null, false);
+    downloadFile(html, 'اختبار.html', 'text/html;charset=utf-8');
+    alert('تم تحميل ملف HTML بنجاح ✅');
   };
 
-const handleDownloadModels = () => {
-  try {
+  const handleDownloadWord = () => {
+    if (questions.length === 0 || !questions[0].text) {
+      alert('الرجاء اختيار أسئلة أولاً!');
+      return;
+    }
+    const html = generateHTML(questions, null, false);
+    downloadFile('\ufeff' + html, 'اختبار.doc', 'application/msword;charset=utf-8');
+    alert('تم تحميل ملف Word بنجاح ✅');
+  };
+
+  const handleDownloadModels = () => {
+    if (questions.length === 0 || !questions[0].text) {
+      alert('الرجاء اختيار أسئلة أولاً!');
+      return;
+    }
+
     for (let i = 0; i < numModels; i++) {
       setTimeout(() => {
         const shuffledQuestions = shuffleArray(questions.map(q => {
-          const shuffledOpts = shuffleArray(q.options.map((opt, idx) => ({ text: opt, wasIndex: idx })));
+          const optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, wasIndex: idx }));
+          const shuffledOpts = shuffleArray(optionsWithIndex);
           return {
             ...q,
-            options: shuffledOpts,
-            correctAnswer: shuffledOpts.findIndex((opt: any) => opt.wasIndex === q.correctAnswer)
+            options: shuffledOpts.map(opt => opt.text),
+            correctAnswer: shuffledOpts.findIndex(opt => opt.wasIndex === q.correctAnswer)
           };
         }));
         
@@ -495,11 +421,9 @@ const handleDownloadModels = () => {
       downloadFile(html, 'نموذج_الاجابة.html', 'text/html;charset=utf-8');
       alert(`تم تحميل ${numModels} نموذج + نموذج الإجابة ✅`);
     }, numModels * 600);
-  } catch (error) {
-    alert('حدث خطأ: ' + error);
-  }
-};
+  };
 
+  // ================== RENDER ==================
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-6" dir="rtl">
       <div className="max-w-5xl mx-auto">
@@ -511,8 +435,8 @@ const handleDownloadModels = () => {
             <p className="text-gray-600">أنشئ اختبارات احترافية بنماذج متعددة</p>
           </div>
 
+          {/* ============ صفحة المواد ============ */}
           {showSubjectsPage ? (
-            // صفحة المواد
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold text-green-900">إدارة المواد وبنك الأسئلة</h2>
@@ -553,9 +477,7 @@ const handleDownloadModels = () => {
                     {subjects.map((subject, idx) => (
                       <div key={idx} className="p-4 bg-white rounded-lg border-2 border-blue-200 hover:border-blue-400 transition">
                         <div className="flex justify-between items-center">
-                          <div>
-                            <h4 className="font-bold text-lg text-blue-900">{subject}</h4>
-                          </div>
+                          <h4 className="font-bold text-lg text-blue-900">{subject}</h4>
                           <div className="flex gap-2">
                             <button
                               onClick={() => loadSubjectQuestions(subject)}
@@ -578,8 +500,9 @@ const handleDownloadModels = () => {
                 )}
               </div>
             </div>
+
           ) : showAddQuestionsPage ? (
-            // صفحة إضافة الأسئلة
+            /* ============ صفحة إضافة الأسئلة ============ */
             <div>
               <div className="flex justify-between items-center mb-6">
                 <div>
@@ -608,13 +531,25 @@ const handleDownloadModels = () => {
                       </button>
                     </div>
                     
-                    <textarea placeholder="نص السؤال" value={q.text} onChange={(e) => updateTempQuestion(q.id, 'text', e.target.value)} className="w-full p-3 border-2 rounded-lg mb-4 focus:border-green-500 focus:outline-none" rows={2}/>
+                    <textarea 
+                      placeholder="نص السؤال" 
+                      value={q.text} 
+                      onChange={(e) => updateTempQuestion(q.id, 'text', e.target.value)} 
+                      className="w-full p-3 border-2 rounded-lg mb-4 focus:border-green-500 focus:outline-none" 
+                      rows={2}
+                    />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                       {q.options.map((opt, optIdx) => (
                         <div key={optIdx} className="flex items-center gap-2">
-                          <span className="font-bold text-green-700 min-w-[30px]">{['أ', 'ب', 'ج', 'د'][optIdx]})</span>
-                          <input type="text" placeholder={`الخيار ${['أ', 'ب', 'ج', 'د'][optIdx]}`} value={opt} onChange={(e) => updateTempOption(q.id, optIdx, e.target.value)} className="flex-1 p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none"/>
+                          <span className="font-bold text-green-700 min-w-[30px]">{['أ', 'ب', 'ج', 'د'][optIdx]}</span>
+                          <input 
+                            type="text" 
+                            placeholder={`الخيار ${['أ', 'ب', 'ج', 'د'][optIdx]}`} 
+                            value={opt} 
+                            onChange={(e) => updateTempOption(q.id, optIdx, e.target.value)} 
+                            className="flex-1 p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none"
+                          />
                         </div>
                       ))}
                     </div>
@@ -622,7 +557,11 @@ const handleDownloadModels = () => {
                     <div className="flex gap-4">
                       <div className="flex items-center gap-2">
                         <label className="font-semibold">الإجابة الصحيحة:</label>
-                        <select value={q.correctAnswer} onChange={(e) => updateTempQuestion(q.id, 'correctAnswer', parseInt(e.target.value))} className="p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none">
+                        <select 
+                          value={q.correctAnswer} 
+                          onChange={(e) => updateTempQuestion(q.id, 'correctAnswer', parseInt(e.target.value))} 
+                          className="p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none"
+                        >
                           {[0, 1, 2, 3].map((idx) => (
                             <option key={idx} value={idx}>{['أ', 'ب', 'ج', 'د'][idx]}</option>
                           ))}
@@ -630,7 +569,13 @@ const handleDownloadModels = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <label className="font-semibold">الدرجات:</label>
-                        <input type="number" min="1" value={q.marks} onChange={(e) => updateTempQuestion(q.id, 'marks', parseInt(e.target.value))} className="w-20 p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none"/>
+                        <input 
+                          type="number" 
+                          min="1" 
+                          value={q.marks} 
+                          onChange={(e) => updateTempQuestion(q.id, 'marks', parseInt(e.target.value))} 
+                          className="w-20 p-2 border-2 rounded-lg focus:border-green-500 focus:outline-none"
+                        />
                       </div>
                     </div>
                   </div>
@@ -649,35 +594,207 @@ const handleDownloadModels = () => {
                 </button>
               </div>
             </div>
-          </div>
-        )}
 
-        {showQuestionSelector && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-4">اختر الأسئلة</h2>
-              <div className="space-y-3 mb-6">
-                {availableQuestions.map((q) => (
-                  <div key={q.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                    <input type="checkbox" checked={selectedQuestionIds.includes(q.id)} onChange={() => toggleQuestionSelection(q.id)} className="mt-1"/>
-                    <div className="flex-1">
-                      <p className="font-semibold">{q.text}</p>
-                      <p className="text-sm text-gray-600">الدرجات: {q.marks}</p>
-                    </div>
+          ) : (
+            /* ============ الصفحة الرئيسية ============ */
+            <div>
+              {/* بنك الأسئلة */}
+              <div className="mb-8 p-6 bg-amber-50 rounded-xl border-2 border-amber-200">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-amber-900 flex items-center gap-2">
+                    <BookOpen size={24} />
+                    بنك الأسئلة حسب المادة
+                  </h2>
+                  <button
+                    onClick={() => setShowSubjectsPage(true)}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+                  >
+                    <Plus size={20} />
+                    إدارة المواد والأسئلة
+                  </button>
+                </div>
+
+                {subjects.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {subjects.map((subject, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => loadQuestionsForSelection(subject)}
+                        className="p-3 bg-white rounded-lg border-2 border-amber-200 hover:border-amber-400 text-right font-semibold transition"
+                      >
+                        {subject}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <p className="text-gray-500 text-center py-4">لا توجد مواد محفوظة. اضغط على &quot;إدارة المواد والأسئلة&quot; للبدء</p>
+                )}
               </div>
-              <div className="flex gap-3">
-                <button onClick={applySelectedQuestions} className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-                  تطبيق
-                </button>
-                <button onClick={() => setShowQuestionSelector(false)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-                  إلغاء
-                </button>
+
+              {/* معلومات الاختبار */}
+              <div className="mb-8 p-6 bg-blue-50 rounded-xl border-2 border-blue-200">
+                <h2 className="text-2xl font-bold text-blue-900 mb-4">معلومات الاختبار</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="عنوان الاختبار"
+                    value={examInfo.title}
+                    onChange={(e) => setExamInfo({...examInfo, title: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="اسم المادة"
+                    value={examInfo.subject}
+                    onChange={(e) => setExamInfo({...examInfo, subject: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="الفصل الدراسي (مثال: 1446هـ)"
+                    value={examInfo.semester}
+                    onChange={(e) => setExamInfo({...examInfo, semester: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="الصف"
+                    value={examInfo.grade}
+                    onChange={(e) => setExamInfo({...examInfo, grade: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="زمن الاختبار"
+                    value={examInfo.duration}
+                    onChange={(e) => setExamInfo({...examInfo, duration: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="الدرجة الكلية"
+                    value={examInfo.totalMarks}
+                    onChange={(e) => setExamInfo({...examInfo, totalMarks: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="اسم المدرسة"
+                    value={examInfo.schoolName}
+                    onChange={(e) => setExamInfo({...examInfo, schoolName: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="إدارة التعليم"
+                    value={examInfo.educationDept}
+                    onChange={(e) => setExamInfo({...examInfo, educationDept: e.target.value})}
+                    className="p-3 border-2 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* الأسئلة المحددة */}
+              {questions.length > 0 && questions[0].text && (
+                <div className="mb-8 p-6 bg-green-50 rounded-xl border-2 border-green-200">
+                  <h2 className="text-2xl font-bold text-green-900 mb-4">الأسئلة المحددة للاختبار ({questions.length} سؤال)</h2>
+                  <div className="space-y-2">
+                    {questions.map((q, idx) => (
+                      <div key={q.id} className="p-3 bg-white rounded-lg border flex justify-between items-center">
+                        <span>{idx + 1}. {q.text}</span>
+                        <button onClick={() => removeQuestion(q.id)} className="text-red-500 hover:bg-red-100 p-1 rounded">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* خيارات التحميل */}
+              <div className="p-6 bg-purple-50 rounded-xl border-2 border-purple-200">
+                <h2 className="text-2xl font-bold text-purple-900 mb-4">تحميل الاختبار</h2>
+                
+                <div className="flex items-center gap-4 mb-4">
+                  <label className="font-semibold">عدد النماذج:</label>
+                  <select 
+                    value={numModels} 
+                    onChange={(e) => setNumModels(parseInt(e.target.value))}
+                    className="p-2 border-2 rounded-lg"
+                  >
+                    {[2, 3, 4, 5].map(n => (
+                      <option key={n} value={n}>{n} نماذج</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={handleDownloadHTML}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    <FileText size={20} />
+                    تحميل HTML
+                  </button>
+                  <button
+                    onClick={handleDownloadWord}
+                    className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  >
+                    <Download size={20} />
+                    تحميل Word
+                  </button>
+                  <button
+                    onClick={handleDownloadModels}
+                    className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                  >
+                    <Shuffle size={20} />
+                    تحميل {numModels} نماذج مختلفة + الإجابات
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )}
+
+          {/* نافذة اختيار الأسئلة */}
+          {showQuestionSelector && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4">اختر الأسئلة</h2>
+                <div className="space-y-3 mb-6">
+                  {availableQuestions.map((q) => (
+                    <div key={q.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedQuestionIds.includes(q.id)} 
+                        onChange={() => toggleQuestionSelection(q.id)} 
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <p className="font-semibold">{q.text}</p>
+                        <p className="text-sm text-gray-600">الدرجات: {q.marks}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={applySelectedQuestions} 
+                    className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                  >
+                    تطبيق ({selectedQuestionIds.length} سؤال)
+                  </button>
+                  <button 
+                    onClick={() => setShowQuestionSelector(false)} 
+                    className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );
